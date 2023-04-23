@@ -17,5 +17,17 @@ interface NewsAPIService {
         apiKey: String = "b19a8011cffa475da7fb471210cd641c"
     ): Response<APIResponse>
 
+    @GET("/v2/top-headlines/")
+    suspend fun getSearchedTopHeadlines(
+        @Query("country")
+        country: String,
+        @Query("q")
+        searchQuery: String,
+        @Query("page")
+        page: Int,
+        @Query("apiKey")
+        apiKey: String = "b19a8011cffa475da7fb471210cd641c"
+    ): Response<APIResponse>
+
 
 }

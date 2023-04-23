@@ -7,25 +7,26 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsapiclient.data.model.APIResponse
 import com.example.newsapiclient.data.util.Resource
 import com.example.newsapiclient.domain.usecases.GetNewsHeadlinesUseCase
+import com.example.newsapiclient.domain.usecases.GetSearchedNewsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class NewsViewModel(
     private val getNewsHeadlinesUseCase: GetNewsHeadlinesUseCase,
+    private val getSearchedNewsUseCase: GetSearchedNewsUseCase,
     private val application: Application
 ):  AndroidViewModel(application) {
 
     val newsHeadLines: MutableLiveData<Resource<APIResponse>> = MutableLiveData()
+    val searchedNews: MutableLiveData<Resource<APIResponse>> = MutableLiveData()
 
     fun getNewsHeadlines(country: String, page:Int) = viewModelScope.launch(Dispatchers.IO) {
         try {
             if (isNetworkAvailable(application)) {
-                newsHeadLines.postValue(Resource.Loading())
                 val apiResult = getNewsHeadlinesUseCase.execute(country, page)
                 newsHeadLines.postValue(apiResult)
             }
@@ -34,6 +35,21 @@ class NewsViewModel(
             }
         } catch (e: Exception) {
             newsHeadLines.postValue(Resource.Error(e.message.toString()))
+        }
+    }
+
+    fun searchNews(country: String, searchQuery: String, page:Int) = viewModelScope.launch {
+        try {
+            //searchedNews.postValue(Resource.Loading())
+            if (isNetworkAvailable(application)) {
+                val apiResult = getSearchedNewsUseCase.execute(country, searchQuery, page)
+                searchedNews.postValue(apiResult)
+            }
+            else {
+                searchedNews.postValue(Resource.Error("Internet is not Available"))
+            }
+        } catch (e: Exception) {
+            searchedNews.postValue(Resource.Error(e.message.toString()))
         }
     }
 
@@ -63,7 +79,8 @@ class NewsViewModel(
             }
         }
         return false
-
     }
+
+
 }
 
