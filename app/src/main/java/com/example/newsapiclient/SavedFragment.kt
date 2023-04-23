@@ -48,11 +48,19 @@ class SavedFragment : Fragment() {
             findNavController().navigate(R.id.action_savedFragment_to_infoFragment, bundle)
         }
         initRecyclerView()
+        fetchSavedNewsFromLocalDB()
+        val itemTouchHelperCallback = createItemTouchHelperCallback(view)
+        attachItemTouchHelperToRecyclerView(itemTouchHelperCallback)
 
+    }
+
+    private fun fetchSavedNewsFromLocalDB() {
         viewModel.getSavedNews().observe(viewLifecycleOwner) {
             savedNewsAdapter.differ.submitList(it)
         }
+    }
 
+    private fun createItemTouchHelperCallback(view: View) :ItemTouchHelper.SimpleCallback {
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -78,11 +86,13 @@ class SavedFragment : Fragment() {
             }
 
         }
+        return itemTouchHelperCallback
+    }
 
+    private fun attachItemTouchHelperToRecyclerView(itemTouchHelperCallback: ItemTouchHelper.SimpleCallback) {
         ItemTouchHelper(itemTouchHelperCallback).apply {
             attachToRecyclerView(fragmentSavedBinding.savedNewsRecyclerView)
         }
-
     }
 
     private fun initRecyclerView() {
