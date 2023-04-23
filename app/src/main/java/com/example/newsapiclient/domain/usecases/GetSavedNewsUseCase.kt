@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 class GetSavedNewsUseCase (private val newsRepository: NewsRepository) {
 
-    fun getSavedNews(): Flow<List<Article>> {
+    fun execute(): Flow<List<Article>> {
         return newsRepository.getSavedNews()
     }
 
